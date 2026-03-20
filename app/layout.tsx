@@ -27,9 +27,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} ${playfairDisplay.variable} bg-bg text-text antialiased`}>
-        <div className="mx-auto flex min-h-screen w-full max-w-screen-2xl flex-col">
+        <div className="flex min-h-screen w-full flex-col">
           <Navbar />
-          <main className="flex-1">{children}</main>
+          <main className="flex-1 pt-16 sm:pt-20">{children}</main>
           <Footer />
         </div>
       </body>
