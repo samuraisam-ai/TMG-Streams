@@ -1,13 +1,11 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { useRouter } from "next/navigation";
 import { supabaseBrowser } from "@/lib/supabase";
 
 type AuthTab = "signin" | "signup";
 
 export default function AuthPage() {
-  const router = useRouter();
   const supabase = supabaseBrowser;
 
   const [activeTab, setActiveTab] = useState<AuthTab>("signin");
@@ -43,7 +41,7 @@ export default function AuthPage() {
     }
 
     setSignInLoading(false);
-    router.push("/library");
+    window.location.href = "/library";
   };
 
   const handleCreateAccount = async (event: FormEvent<HTMLFormElement>) => {
