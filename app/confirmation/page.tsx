@@ -1,13 +1,14 @@
 "use client";
 
 import Link from "next/link";
+import { Suspense } from "react";
 import { useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import { seedTitles } from "@/constants/seed-data";
 
 const formatPrice = (amountInCents: number) => `R${(amountInCents / 100).toFixed(2)}`;
 
-export default function ConfirmationPage() {
+function ConfirmationContent() {
   const searchParams = useSearchParams();
   const slug = searchParams.get("title");
 
@@ -52,5 +53,19 @@ export default function ConfirmationPage() {
         </div>
       </div>
     </section>
+  );
+}
+
+export default function ConfirmationPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center">
+          <p className="text-text-secondary">Loading...</p>
+        </div>
+      }
+    >
+      <ConfirmationContent />
+    </Suspense>
   );
 }
