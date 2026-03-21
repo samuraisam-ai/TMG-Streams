@@ -15,9 +15,25 @@ export default function WatchPage() {
     () => seedEpisodes.filter((episode) => episode.title_id === title?.id),
     [title?.id],
   );
+  const initialVimeoId = useMemo(() => {
+    if (!title) {
+      return "";
+    }
+
+    if (title.type === "series") {
+      return episodes[0]?.vimeo_id ?? title.vimeo_id;
+    }
+
+    return title.vimeo_id;
+  }, [episodes, title]);
 
   const [loading, setLoading] = useState(true);
   const [hasAccess, setHasAccess] = useState(false);
+  const [activeVimeoId, setActiveVimeoId] = useState(initialVimeoId);
+
+  useEffect(() => {
+    setActiveVimeoId(initialVimeoId);
+  }, [initialVimeoId]);
 
   useEffect(() => {
     const verifyAccess = async () => {
@@ -45,7 +61,7 @@ export default function WatchPage() {
         .select("id")
         .eq("user_id", user.id)
         .eq("title_id", title.id)
-        .in("status", ["pending", "complete"])
+        .eq("status", "complete")
         .single();
 
       if (error || !data) {
@@ -86,12 +102,15 @@ export default function WatchPage() {
         </Link>
 
         <div className="mt-5 border border-border bg-surface p-4 sm:p-6">
-          <div className="aspect-video w-full border border-border bg-black">
-            <div className="flex h-full flex-col items-center justify-center px-4 text-center">
-              <p className="text-text-secondary">Video Player</p>
-              <p className="mt-2 text-xs text-text-secondary">Vimeo embed will appear here</p>
-              <p className="mt-2 text-xs text-text-secondary">ID: {title.vimeo_id}</p>
-            </div>
+          <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
+            <iframe
+              src={`https://player.vimeo.com/video/${activeVimeoId}?badge=0&autopause=0&player_id=0&app_id=58479&dnt=1`}
+              className="absolute inset-0 h-full w-full"
+              frameBorder="0"
+              allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media"
+              allowFullScreen
+              title={title.title}
+            />
           </div>
         </div>
 
@@ -110,15 +129,22 @@ export default function WatchPage() {
                   <button
                     key={episode.id}
                     type="button"
-                    onClick={() =>
-                      window.alert(
-                        `Episode ${episode.episode_number} selected - Vimeo integration coming soon`,
-                      )
-                    }
-                    className="flex w-full items-center justify-between border-b border-border px-3 py-3 text-left text-sm text-text-secondary hover:text-text"
+                    onClick={() => setActiveVimeoId(episode.vimeo_id)}
+                    className={`flex w-full items-center justify-between border-b border-border border-l-2 px-3 py-3 text-left text-sm transition-colors ${
+                      activeVimeoId === episode.vimeo_id
+                        ? "border-l-white text-text"
+                        : "border-l-transparent text-text-secondary hover:text-text"
+                    }`}
                   >
                     <span>Episode {episode.episode_number}</span>
-                    <span>{episode.episode_title}</span>
+                    <span className="flex items-center gap-2">
+                      {activeVimeoId === episode.vimeo_id && (
+                        <span className="border border-white/20 bg-white/10 px-2 py-0.5 text-[10px] uppercase tracking-[0.14em] text-white">
+                          Now Playing
+                        </span>
+                      )}
+                      <span>{episode.episode_title}</span>
+                    </span>
                   </button>
                 ))}
               </div>

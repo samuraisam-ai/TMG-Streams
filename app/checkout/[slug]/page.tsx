@@ -6,14 +6,39 @@ import { seedEpisodes, seedTitles } from "@/constants/seed-data";
 import { supabaseBrowser } from "@/lib/supabase";
 
 const formatPrice = (amountInCents: number) => `R${(amountInCents / 100).toFixed(2)}`;
+const PAYFAST_URL = "https://www.payfast.co.za/eng/process";
 
 export default function CheckoutPage() {
   const params = useParams<{ slug: string }>();
-  const slugValue = Array.isArray(params.slug) ? params.slug[0] : params.slug;
-  const title = useMemo(() => seedTitles.find((item) => item.slug === slugValue), [slugValue]);
+  const slug = Array.isArray(params.slug) ? params.slug[0] : params.slug;
+  const title = useMemo(() => seedTitles.find((item) => item.slug === slug), [slug]);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  const buildPayFastForm = (
+    selectedTitle: (typeof seedTitles)[number],
+    user: { email?: string | null },
+    purchaseId: string,
+  ) => {
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "";
+    const email = user.email ?? "";
+    const nameFirst = email ? (email.split("@")[0]?.split(/[^a-zA-Z0-9]+/)[0] ?? "Customer") : "Customer";
+
+    return {
+      merchant_id: process.env.NEXT_PUBLIC_PAYFAST_MERCHANT_ID ?? "",
+      merchant_key: process.env.NEXT_PUBLIC_PAYFAST_MERCHANT_KEY ?? "",
+      return_url: `${siteUrl}/confirmation?title=${slug}`,
+      cancel_url: `${siteUrl}/checkout/${slug}`,
+      notify_url: `${siteUrl}/api/payfast/notify`,
+      name_first: nameFirst || "Customer",
+      email_address: email,
+      m_payment_id: purchaseId,
+      amount: (selectedTitle.price / 100).toFixed(2),
+      item_name: `${selectedTitle.title} - TMG Streams`,
+      item_description: `${selectedTitle.type} - ${selectedTitle.synopsis.slice(0, 100)}`,
+    };
+  };
 
   if (!title) {
     return (
@@ -47,20 +72,40 @@ export default function CheckoutPage() {
       return;
     }
 
-    const { error: insertError } = await supabaseBrowser.from("purchases").insert({
-      user_id: user.id,
-      title_id: title.id,
-      amount: title.price,
-      status: "pending",
-    });
+    const { data: purchase, error: insertError } = await supabaseBrowser
+      .from("purchases")
+      .insert({
+        user_id: user.id,
+        title_id: title.id,
+        amount: title.price,
+        status: "pending",
+      })
+      .select("id")
+      .single();
 
-    if (insertError) {
-      setError(insertError.message);
+    if (insertError || !purchase?.id) {
+      setError(insertError?.message ?? "Unable to initialize payment");
       setLoading(false);
       return;
     }
 
-    window.location.href = `/confirmation?title=${title.slug}`;
+    const payFastData = buildPayFastForm(title, user, String(purchase.id));
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.action = PAYFAST_URL;
+    form.style.display = "none";
+
+    Object.entries(payFastData).forEach(([key, value]) => {
+      const input = document.createElement("input");
+      input.type = "hidden";
+      input.name = key;
+      input.value = String(value);
+      form.appendChild(input);
+    });
+
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);
   };
 
   return (
