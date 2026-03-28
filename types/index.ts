@@ -5,7 +5,7 @@ export interface Title {
   type: "film" | "short" | "series";
   tagline?: string;
   synopsis: string;
-  cast: string[];
+  cast_list: string[];
   crew: string[];
   trailer_url: string;
   vimeo_id: string;
