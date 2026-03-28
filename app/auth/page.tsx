@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { supabaseBrowser } from "@/lib/supabase";
 
 type AuthTab = "signin" | "signup";
@@ -14,6 +14,17 @@ export default function AuthPage() {
   const [signInPassword, setSignInPassword] = useState("");
   const [signInError, setSignInError] = useState("");
   const [signInLoading, setSignInLoading] = useState(false);
+  const [rememberMe, setRememberMe] = useState(true);
+
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        window.location.href = "/library";
+      }
+    };
+    checkSession();
+  }, [supabase]);
 
   const [fullName, setFullName] = useState("");
   const [signUpEmail, setSignUpEmail] = useState("");
@@ -159,6 +170,19 @@ export default function AuthPage() {
                   className="w-full border border-border bg-bg px-3 py-3 text-text outline-none focus:border-white rounded-none"
                 />
                 {signInError && <p className="mt-2 text-xs text-red-500">{signInError}</p>}
+              </div>
+
+              <div className="flex items-center gap-2">
+                <input
+                  id="remember-me"
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(event) => setRememberMe(event.target.checked)}
+                  className="h-4 w-4 accent-white cursor-pointer"
+                />
+                <label htmlFor="remember-me" className="text-sm text-text-secondary cursor-pointer select-none">
+                  Remember me
+                </label>
               </div>
 
               <button
