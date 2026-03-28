@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { seedTitles } from "@/constants/seed-data";
 import { supabaseBrowser } from "@/lib/supabase";
-import type { Title } from "@/types";
 
 interface PurchaseRow {
   id: string;
@@ -74,9 +73,9 @@ export default function LibraryPage() {
         const title = titleById.get(purchase.title_id);
         return title ? { purchase, title } : null;
       })
-      .filter((item): item is { purchase: PurchaseRow; title: Title } => Boolean(item));
+      .filter((item): item is NonNullable<typeof item> => Boolean(item));
 
-    const unique = new Map<string, { purchase: PurchaseRow; title: Title }>();
+    const unique = new Map<string, NonNullable<typeof mapped[0]>>();
     mapped.forEach((item) => {
       if (!unique.has(item.title.id)) {
         unique.set(item.title.id, item);
