@@ -93,7 +93,21 @@ export default function TitleModal({ open, title, onClose, formatPrice }: TitleM
 
             <div className="mt-5">
               <p className="text-[10px] uppercase tracking-[0.22em] text-text-secondary">CAST</p>
-              <p className="mt-2 text-sm text-text">{title.cast.join(", ")}</p>
+              <p className="mt-2 text-sm text-text">{title.cast_list.join(", ")}</p>
+            </div>
+
+            <div className="mt-5">
+              <p className="text-[10px] uppercase tracking-[0.22em] text-text-secondary">CREW</p>
+              <div className="mt-2 space-y-2">
+                {Object.entries(title.crew).map(([role, names]) => (
+                  <div key={role}>
+                    <span className="text-text-secondary text-xs uppercase tracking-wide">
+                      {role}:
+                    </span>
+                    <span className="text-text text-sm ml-2">{names.join(", ")}</span>
+                  </div>
+                ))}
+              </div>
             </div>
 
             <button

@@ -6,7 +6,7 @@ export interface Title {
   tagline?: string;
   synopsis: string;
   cast_list: string[];
-  crew: string[];
+  crew: Record<string, string[]>;
   trailer_url: string;
   vimeo_id: string;
   price: number;

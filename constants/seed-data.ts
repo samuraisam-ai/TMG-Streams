@@ -1,12 +1,6 @@
 import type { Title } from "@/types";
 
-type SeedTitle = Omit<Title, "cast" | "crew"> & {
-  cast_list: string[];
-  crew: Record<string, string[]>;
-  tagline?: string;
-};
-
-export const seedTitles: SeedTitle[] = [
+export const seedTitles: Title[] = [
   {
     id: "0177f0eb-f124-4880-a07f-94cdde25faae",
     slug: "burgundy",
