@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
-import { seedEpisodes, seedTitles } from "@/constants/seed-data";
+import { seedTitles } from "@/constants/seed-data";
 import { supabaseBrowser } from "@/lib/supabase";
 
 export default function WatchPage() {
@@ -11,21 +11,7 @@ export default function WatchPage() {
   const slug = Array.isArray(params.slug) ? params.slug[0] : params.slug;
 
   const title = useMemo(() => seedTitles.find((item) => item.slug === slug), [slug]);
-  const episodes = useMemo(
-    () => seedEpisodes.filter((episode) => episode.title_id === title?.id),
-    [title?.id],
-  );
-  const initialVimeoId = useMemo(() => {
-    if (!title) {
-      return "";
-    }
-
-    if (title.type === "series") {
-      return episodes[0]?.vimeo_id ?? title.vimeo_id;
-    }
-
-    return title.vimeo_id;
-  }, [episodes, title]);
+  const initialVimeoId = title?.vimeo_id ?? "";
 
   const [loading, setLoading] = useState(true);
   const [hasAccess, setHasAccess] = useState(false);
@@ -120,36 +106,7 @@ export default function WatchPage() {
             {title.type.toUpperCase()}
           </p>
           <p className="mt-4 text-sm leading-relaxed text-text-secondary">{title.synopsis}</p>
-
-          {title.type === "series" && episodes.length > 0 && (
-            <div className="mt-8">
-              <p className="text-xs uppercase tracking-[0.25em] text-text-secondary">EPISODES</p>
-              <div className="mt-3 border-t border-border">
-                {episodes.map((episode) => (
-                  <button
-                    key={episode.id}
-                    type="button"
-                    onClick={() => setActiveVimeoId(episode.vimeo_id)}
-                    className={`flex w-full items-center justify-between border-b border-border border-l-2 px-3 py-3 text-left text-sm transition-colors ${
-                      activeVimeoId === episode.vimeo_id
-                        ? "border-l-white text-text"
-                        : "border-l-transparent text-text-secondary hover:text-text"
-                    }`}
-                  >
-                    <span>Episode {episode.episode_number}</span>
-                    <span className="flex items-center gap-2">
-                      {activeVimeoId === episode.vimeo_id && (
-                        <span className="border border-white/20 bg-white/10 px-2 py-0.5 text-[10px] uppercase tracking-[0.14em] text-white">
-                          Now Playing
-                        </span>
-                      )}
-                      <span>{episode.episode_title}</span>
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
+          <p className="mt-3 text-sm text-text-secondary">Runtime: Short film</p>
         </div>
       </div>
     </section>

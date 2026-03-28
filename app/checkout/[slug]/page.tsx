@@ -6,7 +6,6 @@ import { seedEpisodes, seedTitles } from "@/constants/seed-data";
 import { supabaseBrowser } from "@/lib/supabase";
 
 const formatPrice = (amountInCents: number) => `R${(amountInCents / 100).toFixed(2)}`;
-const PAYFAST_URL = "https://www.payfast.co.za/eng/process";
 
 export default function CheckoutPage() {
   const params = useParams<{ slug: string }>();
@@ -15,30 +14,8 @@ export default function CheckoutPage() {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
-  const buildPayFastForm = (
-    selectedTitle: (typeof seedTitles)[number],
-    user: { email?: string | null },
-    purchaseId: string,
-  ) => {
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "";
-    const email = user.email ?? "";
-    const nameFirst = email ? (email.split("@")[0]?.split(/[^a-zA-Z0-9]+/)[0] ?? "Customer") : "Customer";
-
-    return {
-      merchant_id: process.env.NEXT_PUBLIC_PAYFAST_MERCHANT_ID ?? "",
-      merchant_key: process.env.NEXT_PUBLIC_PAYFAST_MERCHANT_KEY ?? "",
-      return_url: `${siteUrl}/confirmation?title=${slug}`,
-      cancel_url: `${siteUrl}/checkout/${slug}`,
-      notify_url: `${siteUrl}/api/payfast/notify`,
-      name_first: nameFirst || "Customer",
-      email_address: email,
-      m_payment_id: purchaseId,
-      amount: (selectedTitle.price / 100).toFixed(2),
-      item_name: `${selectedTitle.title} - TMG Streams`,
-      item_description: `${selectedTitle.type} - ${selectedTitle.synopsis.slice(0, 100)}`,
-    };
-  };
+  const [showMockPayment, setShowMockPayment] = useState(false);
+  const [pendingPurchaseId, setPendingPurchaseId] = useState<string | null>(null);
 
   if (!title) {
     return (
@@ -52,7 +29,7 @@ export default function CheckoutPage() {
 
   const episodeCount = seedEpisodes.filter((episode) => episode.title_id === title.id).length;
 
-  const handlePayFast = async () => {
+  const handleBuyNow = async () => {
     setLoading(true);
     setError("");
 
@@ -89,24 +66,61 @@ export default function CheckoutPage() {
       return;
     }
 
-    const payFastData = buildPayFastForm(title, user, String(purchase.id));
-    const form = document.createElement("form");
-    form.method = "POST";
-    form.action = PAYFAST_URL;
-    form.style.display = "none";
-
-    Object.entries(payFastData).forEach(([key, value]) => {
-      const input = document.createElement("input");
-      input.type = "hidden";
-      input.name = key;
-      input.value = String(value);
-      form.appendChild(input);
-    });
-
-    document.body.appendChild(form);
-    form.submit();
-    document.body.removeChild(form);
+    setPendingPurchaseId(String(purchase.id));
+    setShowMockPayment(true);
+    setLoading(false);
   };
+
+  const handleMockComplete = async () => {
+    if (!pendingPurchaseId) {
+      setError("Unable to finalize payment");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+
+    const { error: completeError } = await supabaseBrowser
+      .from("purchases")
+      .update({ status: "complete" })
+      .eq("id", pendingPurchaseId);
+
+    if (completeError) {
+      setError(completeError.message);
+      setLoading(false);
+      return;
+    }
+
+    window.location.href = `/confirmation?title=${slug}`;
+  };
+
+  if (showMockPayment) {
+    return (
+      <section className="flex min-h-[calc(100vh-130px)] items-center justify-center px-6 py-10 sm:px-10 sm:py-14">
+        <div className="w-full max-w-[480px] border border-border bg-surface p-6 text-center sm:p-8">
+          <p className="text-xs uppercase tracking-[0.25em] text-text-secondary">PAYMENT PROCESSING</p>
+          <h1 className="mt-4 font-serif text-4xl leading-tight">Almost there.</h1>
+          <p className="mt-4 text-sm text-text-secondary">
+            This is where PayFast handles your secure payment. Our merchant account is currently being verified.
+            Click below to simulate a completed payment and continue.
+          </p>
+
+          <button
+            type="button"
+            onClick={handleMockComplete}
+            disabled={loading}
+            className="mt-7 w-full border border-white bg-white px-4 py-4 text-sm font-medium text-black disabled:opacity-70"
+          >
+            {loading ? "Processing..." : "Skyf Money 💸"}
+          </button>
+
+          {error && <p className="mt-3 text-xs text-red-500">{error}</p>}
+
+          <p className="mt-5 text-xs text-text-secondary">Secured payment powered by PayFast - coming soon</p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="px-6 py-10 sm:px-10 sm:py-14">
@@ -149,15 +163,15 @@ export default function CheckoutPage() {
 
           <button
             type="button"
-            onClick={handlePayFast}
+            onClick={handleBuyNow}
             disabled={loading}
             className="w-full border border-accent bg-accent px-4 py-4 text-sm font-medium text-bg disabled:opacity-70"
           >
-            {loading ? "Processing..." : "Pay with PayFast"}
+            {loading ? "Processing..." : "Buy Now"}
           </button>
 
           <p className="mt-3 text-xs text-text-secondary">
-            You will be redirected to PayFast to complete your payment securely.
+            You will continue to a mock payment screen for testing.
           </p>
 
           <button

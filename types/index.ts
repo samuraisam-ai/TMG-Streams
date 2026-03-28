@@ -3,6 +3,7 @@ export interface Title {
   slug: string;
   title: string;
   type: "film" | "short" | "series";
+  tagline?: string;
   synopsis: string;
   cast: string[];
   crew: string[];
