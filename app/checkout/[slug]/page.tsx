@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useParams } from "next/navigation";
-import { seedEpisodes, seedTitles } from "@/constants/seed-data";
+import { seedTitles } from "@/constants/seed-data";
 import { supabaseBrowser } from "@/lib/supabase";
 
 const formatPrice = (amountInCents: number) => `R${(amountInCents / 100).toFixed(2)}`;
@@ -26,8 +26,6 @@ export default function CheckoutPage() {
       </section>
     );
   }
-
-  const episodeCount = seedEpisodes.filter((episode) => episode.title_id === title.id).length;
 
   const handleBuyNow = async () => {
     setLoading(true);
@@ -137,11 +135,7 @@ export default function CheckoutPage() {
 
           <p className="mt-4 line-clamp-2 text-sm text-text-secondary">{title.synopsis}</p>
 
-          {title.type === "series" && (
-            <p className="mt-4 text-sm text-text-secondary">
-              {episodeCount} Episodes · Full Season Access
-            </p>
-          )}
+          <p className="mt-4 text-sm text-text-secondary">Short film · Full access</p>
         </div>
 
         <div className="border border-border bg-surface p-5 sm:p-6">
