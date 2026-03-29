@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import TitleCard from "@/components/TitleCard";
 import TitleModal from "@/components/TitleModal";
@@ -24,7 +23,6 @@ export default function HomepageClient({ titles }: HomepageClientProps) {
   const [selectedTitle, setSelectedTitle] = useState<Title | null>(null);
   const [activeBackdropIndex, setActiveBackdropIndex] = useState(0);
   const displayTitles = useMemo(() => titles.filter((title) => title.published), [titles]);
-  const burgundy = useMemo(() => titles.find((t) => t.slug === "burgundy"), [titles]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -80,23 +78,6 @@ export default function HomepageClient({ titles }: HomepageClientProps) {
           >
             →
           </button>
-
-          {/* Center Text Overlay */}
-          {burgundy && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
-              <p className="text-xs uppercase tracking-widest text-[#c4873a]">NOW SHOWING</p>
-              <h2 className="mt-2 font-serif text-4xl text-[#f5f0ea]">{burgundy.title}</h2>
-              <p className="mt-2 text-sm text-[#f5f0ea] uppercase tracking-[0.15em]">
-                {burgundy.type.toUpperCase()} · Short film
-              </p>
-              <Link
-                href="/titles/burgundy"
-                className="mt-6 border border-[#c4873a] bg-[#c4873a] px-6 py-2 text-sm font-medium text-[#0d0d0d] inline-block transition hover:opacity-90"
-              >
-                Watch Now
-              </Link>
-            </div>
-          )}
 
           {/* Dot Indicators */}
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
