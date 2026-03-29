@@ -47,6 +47,24 @@ export default function CheckoutPage() {
       return;
     }
 
+    const { data: existingPurchase } = await supabaseBrowser
+      .from("purchases")
+      .select("id, status")
+      .eq("user_id", user.id)
+      .eq("title_id", title.id)
+      .maybeSingle();
+
+    if (existingPurchase) {
+      if (existingPurchase.status === "complete") {
+        window.location.href = `/watch/${slug}`;
+        return;
+      }
+      setPendingPurchaseId(String(existingPurchase.id));
+      setShowMockPayment(true);
+      setLoading(false);
+      return;
+    }
+
     const { data: purchase, error: insertError } = await supabaseBrowser
       .from("purchases")
       .insert({
