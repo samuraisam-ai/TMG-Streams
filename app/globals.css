@@ -3,12 +3,12 @@
 @tailwind utilities;
 
 :root {
-  --bg: #0a0a0a;
-  --surface: #111111;
-  --border: #1f1f1f;
-  --text: #ffffff;
-  --text-secondary: #8a8a8a;
-  --accent: #ffffff;
+  --bg: #0d0d0d;
+  --surface: #161616;
+  --border: #2a2520;
+  --text: #f5f0ea;
+  --text-secondary: #9a8f83;
+  --accent: #c4873a;
   --radius: 2px;
 }
 
