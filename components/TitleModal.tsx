@@ -83,7 +83,13 @@ export default function TitleModal({ open, title, onClose, formatPrice }: TitleM
         </button>
 
         <div className="grid gap-6 pt-7 md:grid-cols-[260px_1fr] md:pt-2">
-          <div className="aspect-[2/3] w-full border border-border bg-[#090909]" />
+          <div className="aspect-[2/3] w-full border border-border bg-[#090909]">
+            <img
+              src={title.poster_url}
+              alt={title.title}
+              className="w-full h-full object-cover"
+            />
+          </div>
 
           <div className="flex flex-col">
             <p className="text-[10px] uppercase tracking-[0.2em] text-text-secondary">{title.type}</p>
@@ -112,7 +118,7 @@ export default function TitleModal({ open, title, onClose, formatPrice }: TitleM
 
             <button
               type="button"
-              className="mt-6 w-full border border-white bg-transparent px-4 py-3 text-sm font-medium text-white"
+              className="mt-6 w-full border border-[#c4873a] bg-transparent px-4 py-3 text-sm font-medium text-[#c4873a]"
             >
               Watch Trailer
             </button>
@@ -121,7 +127,7 @@ export default function TitleModal({ open, title, onClose, formatPrice }: TitleM
               <p className="text-2xl font-medium text-text">{formatPrice(title.price)}</p>
               <Link
                 href={`/checkout/${title.slug}`}
-                className="mt-3 block w-full border border-accent bg-accent px-4 py-3 text-center text-sm font-medium text-bg"
+                className="mt-3 block w-full border border-[#c4873a] bg-[#c4873a] px-4 py-3 text-center text-sm font-medium text-[#0d0d0d]"
               >
                 Buy Now - {formatPrice(title.price)}
               </Link>

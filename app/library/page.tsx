@@ -122,7 +122,13 @@ export default function LibraryPage() {
                 <p className="text-xs uppercase tracking-[0.25em] text-text-secondary">RECENTLY ADDED</p>
                 <Link href={`/watch/${latest.title.slug}`} className="mt-4 block">
                   <div className="grid gap-5 sm:grid-cols-[180px_1fr]">
-                    <div className="aspect-[2/3] border border-border bg-bg" />
+                    <div className="aspect-[2/3] border border-border bg-bg">
+                      <img
+                        src={latest.title.poster_url}
+                        alt={latest.title.title}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
                     <div className="self-center">
                       <p className="font-serif text-3xl">{latest.title.title}</p>
                       <p className="mt-1 text-[10px] uppercase tracking-[0.2em] text-text-secondary">
@@ -143,7 +149,13 @@ export default function LibraryPage() {
                     href={`/watch/${title.slug}`}
                     className="border border-border bg-surface p-4 transition duration-200 hover:border-white hover:scale-[1.02]"
                   >
-                    <div className="aspect-[2/3] border border-border bg-bg" />
+                    <div className="aspect-[2/3] border border-border bg-bg">
+                      <img
+                        src={title.poster_url}
+                        alt={title.title}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
                     <p className="mt-3 font-serif text-2xl">{title.title}</p>
                     <p className="mt-1 text-[10px] uppercase tracking-[0.2em] text-text-secondary">
                       {title.type.toUpperCase()}

@@ -11,15 +11,9 @@ export default function WatchPage() {
   const slug = Array.isArray(params.slug) ? params.slug[0] : params.slug;
 
   const title = useMemo(() => seedTitles.find((item) => item.slug === slug), [slug]);
-  const initialVimeoId = title?.vimeo_id ?? "";
 
   const [loading, setLoading] = useState(true);
   const [hasAccess, setHasAccess] = useState(false);
-  const [activeVimeoId, setActiveVimeoId] = useState(initialVimeoId);
-
-  useEffect(() => {
-    setActiveVimeoId(initialVimeoId);
-  }, [initialVimeoId]);
 
   useEffect(() => {
     const verifyAccess = async () => {
@@ -80,7 +74,7 @@ export default function WatchPage() {
         <div className="mt-5 border border-border bg-surface p-4 sm:p-6">
           <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
             <iframe
-              src={`https://player.vimeo.com/video/${activeVimeoId}?badge=0&autopause=0&player_id=0&app_id=58479&dnt=1`}
+              src={`https://www.youtube.com/embed/${title.vimeo_id}?rel=0&modestbranding=1`}
               className="absolute inset-0 h-full w-full"
               frameBorder="0"
               allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media"
