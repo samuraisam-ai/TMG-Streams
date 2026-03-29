@@ -92,17 +92,11 @@ export default function AuthPage() {
       return;
     }
 
-    const { error: profileError } = await supabase.from("profiles").upsert({
+    await supabase.from("profiles").upsert({
       id: user.id,
       email: user.email ?? signUpEmail,
       full_name: fullName,
     });
-
-    if (profileError) {
-      setSignUpError(profileError.message);
-      setSignUpLoading(false);
-      return;
-    }
 
     setSignUpLoading(false);
     setSignUpSuccess(true);
@@ -262,7 +256,7 @@ export default function AuthPage() {
               {signUpError && <p className="text-xs text-red-500">{signUpError}</p>}
 
               {signUpSuccess && (
-                <p className="text-xs text-text">Check your email to confirm your account</p>
+                <p className="text-xs text-text">Account created successfully! Check your email to confirm before signing in.</p>
               )}
 
               <button

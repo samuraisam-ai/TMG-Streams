@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, } from "react";
 import { seedTitles } from "@/constants/seed-data";
 import { supabaseBrowser } from "@/lib/supabase";
 
@@ -14,6 +14,7 @@ export default function WatchPage() {
 
   const [loading, setLoading] = useState(true);
   const [hasAccess, setHasAccess] = useState(false);
+  const [castExpanded, setCastExpanded] = useState(false);
 
   useEffect(() => {
     const verifyAccess = async () => {
@@ -89,8 +90,58 @@ export default function WatchPage() {
           <p className="mt-2 text-[10px] uppercase tracking-[0.22em] text-text-secondary">
             {title.type.toUpperCase()}
           </p>
-          <p className="mt-4 text-sm leading-relaxed text-text-secondary">{title.synopsis}</p>
-          <p className="mt-3 text-sm text-text-secondary">Runtime: Short film</p>
+          <div className="mt-4">
+            <p className="text-sm leading-relaxed text-text-secondary">
+              {title.synopsis}
+            </p>
+            {title.tagline && (
+              <p className="mt-3 text-sm italic text-[#c4873a]">
+                &ldquo;{title.tagline}&rdquo;
+              </p>
+            )}
+            <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4 text-sm">
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.2em] text-text-secondary">Type</p>
+                <p className="mt-1 text-text">
+                  {title.type.charAt(0).toUpperCase() + title.type.slice(1)}
+                </p>
+              </div>
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.2em] text-text-secondary">Runtime</p>
+                <p className="mt-1 text-text">9 min 26 sec</p>
+              </div>
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.2em] text-text-secondary">Directed by</p>
+                <p className="mt-1 text-text">
+                  {title.crew["Directed by"]?.join(", ")}
+                </p>
+              </div>
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.2em] text-text-secondary">Written by</p>
+                <p className="mt-1 text-text">
+                  {title.crew["Written by"]?.join(", ")}
+                </p>
+              </div>
+            </div>
+            <div className="mt-5 border-t border-border pt-4">
+              <button
+                onClick={() => setCastExpanded(!castExpanded)}
+                className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-text-secondary hover:text-text"
+              >
+                Cast & Crew
+                <span>{castExpanded ? "↑" : "↓"}</span>
+              </button>
+              {castExpanded && (
+                <div className="mt-4 space-y-2">
+                  {title.cast_list.map((member) => (
+                    <p key={member} className="text-sm text-text-secondary">
+                      {member}
+                    </p>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </section>

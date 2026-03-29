@@ -36,13 +36,7 @@ export default function CheckoutPage() {
       error: userError,
     } = await supabaseBrowser.auth.getUser();
 
-    if (userError) {
-      setError(userError.message);
-      setLoading(false);
-      return;
-    }
-
-    if (!user) {
+    if (userError || !user) {
       window.location.href = "/auth";
       return;
     }
@@ -144,7 +138,13 @@ export default function CheckoutPage() {
         <div className="border border-border bg-surface p-5 sm:p-6">
           <p className="text-xs uppercase tracking-[0.25em] text-text-secondary">YOUR ORDER</p>
 
-          <div className="mt-4 aspect-[2/3] w-full border border-border bg-bg" />
+          <div className="mt-4 aspect-[2/3] w-full border border-border bg-bg">
+            <img
+              src={title.poster_url}
+              alt={title.title}
+              className="w-full h-full object-cover"
+            />
+          </div>
 
           <h1 className="mt-5 font-serif text-4xl leading-tight">{title.title}</h1>
           <p className="mt-2 text-[10px] uppercase tracking-[0.22em] text-text-secondary">
