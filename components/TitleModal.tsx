@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Title } from "@/types";
 
 interface TitleModalProps {
@@ -13,6 +13,7 @@ interface TitleModalProps {
 
 export default function TitleModal({ open, title, onClose, formatPrice }: TitleModalProps) {
   const modalRef = useRef<HTMLDivElement | null>(null);
+  const [crewExpanded, setCrewExpanded] = useState(false);
 
   useEffect(() => {
     if (!open) {
@@ -104,15 +105,27 @@ export default function TitleModal({ open, title, onClose, formatPrice }: TitleM
 
             <div className="mt-5">
               <p className="text-[10px] uppercase tracking-[0.22em] text-text-secondary">CREW</p>
-              <div className="mt-2 space-y-2">
-                {Object.entries(title.crew).map(([role, names]) => (
-                  <div key={role}>
-                    <span className="text-text-secondary text-xs uppercase tracking-wide">
-                      {role}:
-                    </span>
-                    <span className="text-text text-sm ml-2">{names.join(", ")}</span>
-                  </div>
-                ))}
+              <div>
+                <div className="space-y-2 mt-2">
+                  {Object.entries(title.crew)
+                    .slice(0, crewExpanded ? undefined : 3)
+                    .map(([role, names]) => (
+                      <div key={role}>
+                        <span className="text-text-secondary text-xs uppercase tracking-wide">
+                          {role}:
+                        </span>
+                        <span className="text-text text-sm ml-2">
+                          {names.join(", ")}
+                        </span>
+                      </div>
+                    ))}
+                </div>
+                <button
+                  onClick={() => setCrewExpanded(!crewExpanded)}
+                  className="mt-3 text-xs text-[#c4873a] hover:underline"
+                >
+                  {crewExpanded ? "Hide credits ↑" : "Show full credits ↓"}
+                </button>
               </div>
             </div>
 
